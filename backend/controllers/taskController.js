@@ -111,4 +111,99 @@ const updatetask = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-export { newTask, getTasks, updatetask };
+
+const getLabels = async (req, res) => {
+  try {
+    const labels = await Task.distinct("labels");
+
+    if (!labels.length) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No labels found" });
+    }
+
+    res.status(200).json({ success: true, labels });
+  } catch (error) {
+    console.error("Failed to fetch the labels");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const updatelabels = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { labels } = req.body;
+    if (!id || !labels || !Array.isArray(labels)) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid input data" });
+    }
+
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ success: false, message: "No task found" });
+    }
+    task.labels = labels; //update labels with new array
+    const upadateTask = await task.save();
+    res.status(200).json({ success: true, task: upadateTask });
+  } catch (error) {
+    console.error("Failed to add label in Task");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const updateStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = res.bbody;
+
+    if (!id || !status) {
+      return res.status(400).json({ success: false, message: "Invalid Input" });
+    }
+
+    if (!["Open", "In-progess", "Completed"].includes(status)) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid Status value" });
+    }
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ success: false, message: "No Task Found" });
+    }
+    task.status = status;
+    const updatedTask = await task.save();
+    res.status(200).jsn({ success: true, task: updatedTask });
+  } catch (error) {
+    console.error("Failed to change the status");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const deleteTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.satus(400).json({ success: false, message: "No Id provided" });
+    }
+
+    await Task.findByIdAndDelete(id);
+    res
+      .status(200)
+      .json({ success: true, message: "task Deleted Successfully" });
+  } catch (error) {
+    console.error("Error i deleting task", error);
+    res
+      .status(400)
+      .json({ success: false, message: "Task Deleted Unsuccessfully" });
+  }
+};
+export {
+  newTask,
+  getTasks,
+  updatetask,
+  getLabels,
+  updatelabels,
+  updateStatus,
+  deleteTask,
+};
