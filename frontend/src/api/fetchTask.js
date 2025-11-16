@@ -36,3 +36,5 @@ async function fetchTaskAPI(handleResponse, handleError, options = {}) {
     handleError(error.message);
   }
 }
+
+export default fetchTaskAPI
