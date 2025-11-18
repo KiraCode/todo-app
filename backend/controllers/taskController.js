@@ -1,0 +1,85 @@
+import moment from "moment-timezone";
+import Task from "../models/taskModels.js";
+
+const newTask = async (req, res) => {
+  try {
+    // extract data from request body
+    const { title, description, due_date, labels } = req.body;
+
+    // validate incoming data
+    if (!title || !description) {
+      return res
+        .status(400)
+        .json({ message: "Title and Description are required" });
+    }
+
+    let isDueDate;
+    if (due_date) {
+      isDueDate = moment.tz(due_date, "Asia/Kolkata").toDate();
+    }
+
+    // create a new task
+    const newTask = await Task.create({
+      title,
+      description,
+      due_date: isDueDate,
+      labels,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Task created Successfully",
+      task: newTask,
+    });
+  } catch (error) {
+    console.error("Error while creating a task", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getTasks = async (req, res) => {
+  try {
+    const { page, sort_by, sort_type, status, limit = 10, labels } = req.query;
+    let options = {};
+    let query = {};
+
+    // set sort option
+    if (sort_by && ["added_on", "due_date"].includes(sort_by)) {
+      const sortOptions = {};
+      sortOptions[sort_by] = sort_type === "desc" ? -1 : 1;
+      options.sort = sortOptions;
+    }
+
+    // set filter options
+    if (status && status.length > 0) {
+      const statusItems = JSON.parse(labels);
+      query.status = { $in: statusItems };
+    }
+
+    // set labels options
+    // http://localhost:500/api/v22/tasks?labels=["React"]
+    if (labels && labels.length > 0) {
+      const labelItems = JSON.parse(labels);
+      query.labels = { $in: labelItems };
+    }
+
+    // pagination
+    if (page) {
+      options.limit = parseInt(limit);
+      options.skip = (parent(page) - 1) * parseInt(limit);
+    }
+
+    // fetch tasks
+    const tasks = await Task.find(query, null, options);
+
+    res.status(200).json({ success: true, tasks });
+  } catch (error) {
+    console.error("Failed to fetch the data");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export { newTask, getTasks };
