@@ -39,3 +39,5 @@ const newTask = async (req, res) => {
     });
   }
 };
+
+export { newTask };
