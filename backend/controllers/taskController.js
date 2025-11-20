@@ -129,4 +129,89 @@ const getLabels = async (req, res) => {
   }
 };
 
-export { newTask, getTasks, updateTask, getLabels };
+const updateLabels = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { labels } = req.body;
+    if (!id || !labels || !Array.isArray(labels)) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid input data" });
+    }
+
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ success: false, message: "No Task Found" });
+    }
+
+    task.labels = labels; //update labels with new array
+    const updateTask = await task.save();
+
+    res.status(200).json({ success: true, task: updateTask });
+  } catch (error) {
+    console.error("Failed to add label in Task");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const updateStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!id || !status) {
+      return res.status(400).json({ success: false, message: "Invalid Input" });
+    }
+
+    if (!["Open", "In-Progress", "Completed"].includes(status)) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid Status Value" });
+    }
+
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ success: false, message: "No Task Found" });
+    }
+
+    task.status = status;
+    const updateTask = await task.save();
+
+    res.status(200).json({ success: true, task: updateTask });
+  } catch (error) {
+    console.error("Failed to change the status");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const deleteTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No id provided" });
+    }
+    await Task.findByIdAndDelete(id);
+    res.status(200).json({
+      success: "Task deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error in deleting task", error);
+    res.status(400).json({
+      success: false,
+      message: "Task deleted unsuccessfully",
+    });
+  }
+};
+
+export {
+  newTask,
+  getTasks,
+  updateTask,
+  getLabels,
+  updateLabels,
+  updateStatus,
+  deleteTask,
+};

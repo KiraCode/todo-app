@@ -1,8 +1,11 @@
 import express from "express";
 import {
+  deleteTask,
   getLabels,
   getTasks,
   newTask,
+  updateLabels,
+  updateStatus,
   updateTask,
 } from "../controllers/taskController.js";
 
@@ -12,5 +15,8 @@ router.post("/task", newTask);
 router.get("/tasks", getTasks);
 router.put("/task/:id", updateTask);
 router.get("/labels", getLabels);
+router.put("/task/:id/labels", updateLabels);
+router.put("/task/:id/status", updateStatus);
+router.put("/task/:id", deleteTask);
 
 export default router;
