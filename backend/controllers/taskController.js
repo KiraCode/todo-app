@@ -82,4 +82,136 @@ const getTasks = async (req, res) => {
   }
 };
 
-export { newTask, getTasks };
+const updateTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, due_date } = req.body;
+
+    if (!id) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task Id is required" });
+    }
+
+    const task = await Task.findById(id);
+
+    if (!task) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
+    }
+    if (title) task.title = title;
+    if (due_date) task.due_date = due_date;
+    if (!due_date) task.due_date = null;
+    if (description) task.description = description;
+
+    const updatedTask = await task.save();
+    res.status(200).json({ success: true, task: updatedTask });
+  } catch (error) {
+    console.error("Failed to fetch the data");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getLabels = async (req, res) => {
+  try {
+    const labels = await Task.distinct("labels");
+
+    if (!labels.length) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No labels found" });
+    }
+    res.status(200).json({ success: true, labels: labels });
+  } catch (error) {
+    console.error("Failed to fetch the labels");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const updateLabels = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { labels } = req.body;
+    if (!id || !labels || !Array.isArray(labels)) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid input data" });
+    }
+
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ success: false, message: "No Task Found" });
+    }
+
+    task.labels = labels; //update labels with new array
+    const updateTask = await task.save();
+
+    res.status(200).json({ success: true, task: updateTask });
+  } catch (error) {
+    console.error("Failed to add label in Task");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const updateStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!id || !status) {
+      return res.status(400).json({ success: false, message: "Invalid Input" });
+    }
+
+    if (!["Open", "In-Progress", "Completed"].includes(status)) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid Status Value" });
+    }
+
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ success: false, message: "No Task Found" });
+    }
+
+    task.status = status;
+    const updateTask = await task.save();
+
+    res.status(200).json({ success: true, task: updateTask });
+  } catch (error) {
+    console.error("Failed to change the status");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const deleteTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No id provided" });
+    }
+    await Task.findByIdAndDelete(id);
+    res.status(200).json({
+      success: "Task deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error in deleting task", error);
+    res.status(400).json({
+      success: false,
+      message: "Task deleted unsuccessfully",
+    });
+  }
+};
+
+export {
+  newTask,
+  getTasks,
+  updateTask,
+  getLabels,
+  updateLabels,
+  updateStatus,
+  deleteTask,
+};
