@@ -82,4 +82,34 @@ const getTasks = async (req, res) => {
   }
 };
 
-export { newTask, getTasks };
+const updateTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, due_date } = req.body;
+
+    if (!id) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task Id is required" });
+    }
+
+    const task = await Task.findById(id);
+
+    if (!task) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Task not found" });
+    }
+    if (title) task.title = title;
+    if (due_date) task.due_date = due_date;
+    if (!due_date) task.due_date = null;
+    if (description) task.description = description;
+
+    const updatedTask = await task.save();
+    res.status(200).json({ success: true, task: updatedTask });
+  } catch (error) {
+    console.error("Failed to fetch the data");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+export { newTask, getTasks, updateTask };
