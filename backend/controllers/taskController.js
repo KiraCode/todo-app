@@ -112,4 +112,21 @@ const updateTask = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-export { newTask, getTasks, updateTask };
+
+const getLabels = async (req, res) => {
+  try {
+    const labels = await Task.distinct("labels");
+
+    if (!labels.length) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No labels found" });
+    }
+    res.status(200).json({ success: true, labels: labels });
+  } catch (error) {
+    console.error("Failed to fetch the labels");
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export { newTask, getTasks, updateTask, getLabels };
