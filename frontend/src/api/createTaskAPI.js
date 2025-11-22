@@ -2,9 +2,8 @@ async function createTaskAPI(values, handleResponse, handleError, setLoading) {
   setLoading(true);
   try {
     const baseUrl = import.meta.env.VITE_APP_API_BASE_URL;
-    const endpoint = "/api/v2/task";
-    const url = `${baseUrl}${endpoint}`;
-
+    const endPoint = "/api/v2/task";
+   const url = new URL(endPoint, baseUrl);
     // convert the values in JSON format
     const requetBody = JSON.stringify({
       title: values.taskTitle,
