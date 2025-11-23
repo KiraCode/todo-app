@@ -14,9 +14,10 @@ const TaskMain = () => {
   const [activeTaskId, setActiveTaskId] = useState("");
   const [boardView, setBoardView] = useState(false);
 
-  const activeTask = useMemo(() => {
-    tasks.find((task) => task._id === activeTaskId);
-  }, [tasks, activeTaskId]);
+  const activeTask = useMemo(
+    () => tasks.find((task) => task._id === activeTaskId),
+    [tasks, activeTaskId]
+  );
 
   const showNoTaskScreen = useCallback(function () {
     setCurrComponent("noTask");
@@ -90,15 +91,26 @@ const TaskMain = () => {
             changeTaskStatus={changeTaskStatus}
             boardView={boardView}
             setBoardView={setBoardView}
+            showCreateTaskScreen={showCreateTaskScreen}
           />
         )}
         {currComponent === "createTask" && (
           <CreateTask
             showTaskListScreen={showTaskListScreen}
             fetchAllTasks={fetchAllTasks}
+            tasks={tasks}
           />
         )}
-        {currComponent === "viewTask" && <ViewTask />}
+        {currComponent === "viewTask" && (
+          <ViewTask
+            task={activeTask}
+            setActiveTaskId={setActiveTaskId}
+            fetchAllTasks={fetchAllTasks}
+            showEditTaskScreen={showEditTaskScreen}
+            showTaskListScreen={showTaskListScreen}
+            changeTaskStatus={changeTaskStatus}
+          />
+        )}
         {currComponent === "editTask" && (
           <EditTask
             task={activeTask}

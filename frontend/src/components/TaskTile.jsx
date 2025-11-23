@@ -84,7 +84,8 @@ const TaskTile = ({
               <img src={Edit} alt="Edit Task Screen" />
             </div>
 
-            <div className="delete-container cursor-pointer">
+            <div className="delete-container cursor-pointer"
+             onClick={handleDeleteTask}>
               <img src={Delete} alt="Delete Task Screen" />
             </div>
           </div>
