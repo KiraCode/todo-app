@@ -17,6 +17,6 @@ router.put("/task/:id", updateTask);
 router.get("/labels", getLabels);
 router.put("/task/:id/labels", updateLabels);
 router.put("/task/:id/status", updateStatus);
-router.put("/task/:id", deleteTask);
+router.delete("/task/:id", deleteTask);
 
 export default router;
