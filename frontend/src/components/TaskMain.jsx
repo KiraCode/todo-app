@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import NoTask from "./NoTask";
 import TaskList from "./TaskList";
 import CreateTask from "./CreateTask";
@@ -10,7 +10,13 @@ import fetchTasksAPI from "../api/fetchTask.js";
 const TaskMain = () => {
   // we manage current screen/routing through state in a single page application
   const [currComponent, setCurrComponent] = useState("loading");
-  const [task, setTask] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [activeTaskId, setActiveTaskId] = useState("");
+  const [boardView, setBoardView] = useState(false);
+
+  const activeTask = useMemo(() => {
+    tasks.find((task) => task._id === activeTaskId);
+  }, [tasks, activeTaskId]);
 
   const showNoTaskScreen = useCallback(function () {
     setCurrComponent("noTask");
@@ -35,7 +41,7 @@ const TaskMain = () => {
   // api handling
   const handleResponse = useCallback(function (responseData) {
     const extractedTasks = responseData.tasks;
-    setTask(extractedTasks);
+    setTasks(extractedTasks);
     if (extractedTasks.length) {
       showTaskListScreen();
     } else {
@@ -55,6 +61,17 @@ const TaskMain = () => {
   useEffect(() => {
     fetchAllTasks();
   }, [fetchAllTasks]);
+
+  const changeTaskStatus = useCallback(function (status, taskId) {
+    setTasks((prevTasks) => {
+      return prevTasks.map((task) => {
+        if (task._id === taskId) {
+          return { ...task, status };
+        }
+        return task;
+      });
+    });
+  }, []);
   return (
     <>
       {currComponent === "loading" && <Loading />}
@@ -62,7 +79,19 @@ const TaskMain = () => {
         {currComponent === "noTask" && (
           <NoTask showCreateTaskScreen={showCreateTaskScreen} />
         )}
-        {currComponent === "taskList" && <TaskList />}
+        {currComponent === "taskList" && (
+          <TaskList
+            tasks={tasks}
+            fetchAllTasks={fetchAllTasks}
+            showViewTaskScreen={showViewTaskScreen}
+            showEditTaskScreen={showEditTaskScreen}
+            setActiveTaskId={setActiveTaskId}
+            setTasks={setTasks}
+            changeTaskStatus={changeTaskStatus}
+            boardView={boardView}
+            setBoardView={setBoardView}
+          />
+        )}
         {currComponent === "createTask" && (
           <CreateTask
             showTaskListScreen={showTaskListScreen}
@@ -70,7 +99,13 @@ const TaskMain = () => {
           />
         )}
         {currComponent === "viewTask" && <ViewTask />}
-        {currComponent === "editTask" && <EditTask />}
+        {currComponent === "editTask" && (
+          <EditTask
+            task={activeTask}
+            fetchAllTasks={fetchAllTasks}
+            showTaskListScreen={showTaskListScreen}
+          />
+        )}
       </div>
     </>
   );
