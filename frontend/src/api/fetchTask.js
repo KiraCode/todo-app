@@ -6,7 +6,7 @@ async function fetchTasksAPI(handleResponse, handleError, options = {}) {
     const url = new URL(endPoint, baseUrl);
     if (options.sortOptions) {
       // http://localhost:5000/api/v2/tasks?sort_by=date_added&sort_type=ase
-      url.searchParams.append("sort_by", options.sortOptions);
+      url.searchParams.append("sort_by", options.sortOption);
       url.searchParams.append("sort_type", "asc");
     }
 
