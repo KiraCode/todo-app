@@ -43,6 +43,10 @@ const TaskListSidebar = ({ boardView, setBoardView, setTasks }) => {
     setBoardView(true);
   }, [setBoardView]);
 
+   const enableListView = useCallback(() => {
+    setBoardView(false);
+  }, [setBoardView]);
+
   const selectStatus = useCallback(function (statusToAdd) {
     setSelectedStatus((prevStatus) =>
       prevStatus.includes(statusToAdd)
@@ -111,7 +115,7 @@ const TaskListSidebar = ({ boardView, setBoardView, setTasks }) => {
           {/* list view toggle */}
           <div
             className={clsx("view-toggle", !boardView && "active-toggle")}
-            onClick={enableBoardView}
+            onClick={enableListView}
           >
             <img src={List} alt="List Icon" />
             <p className="list-label">List</p>
