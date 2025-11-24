@@ -84,7 +84,7 @@ const TaskListSidebar = ({ boardView, setBoardView, setTasks }) => {
   };
 
   const handleLabelCheckBox = (e, value) => {
-    if (e.taget.checked) {
+    if (e.target.checked) {
       selectLabels(value);
     } else {
       removeLabels(value);
@@ -140,7 +140,7 @@ const TaskListSidebar = ({ boardView, setBoardView, setTasks }) => {
             handleStatusCheckbox(event, status.value);
           return (
             <CheckBox
-              kay={status.value + "-status"}
+              key={status.value + "-status"}
               label={status.display}
               onClick={handleClick}
             />
@@ -168,7 +168,7 @@ const TaskListSidebar = ({ boardView, setBoardView, setTasks }) => {
         {/* render checkboxes for each label */}
         {labels.map((label) => {
           const handleClick = (event) => handleLabelCheckBox(event, label);
-          return <CheckBox kay={label} label={label} onChick={handleClick} />;
+          return <CheckBox key={label} label={label} onClick={handleClick} />;
         })}
       </div>
     </aside>

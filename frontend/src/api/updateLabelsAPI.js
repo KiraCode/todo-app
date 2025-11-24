@@ -4,7 +4,7 @@ async function updateLabelsAPI(labels, taskId, handleResponse, handleError) {
     const endPoint = `/api/v2/task/${taskId}/labels`;
 
     const url = new URL(endPoint, baseUrl);
-    const requestBody = JSON.stringify({ labels });
+    const requestBody = JSON.stringify({labels});
 
     const response = await fetch(url, {
       method: "PUT",

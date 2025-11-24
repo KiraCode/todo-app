@@ -48,7 +48,7 @@ const LabelSelector = ({
   const handleError = useCallback((errorMsg) => {
     console.error(errorMsg);
     toast.error(errorMsg);
-    // setIsOpen(false);
+    setIsOpen(false);
   }, []);
 
   const handleUpdateResponse = useCallback(() => {
@@ -63,20 +63,20 @@ const LabelSelector = ({
   }, [handleError, handleGetLabelResponse, isOpen]);
 
   //   update label useeffect
-  // useEffect(() => {
-  //   updateLabelsAPI(selectedLabels, taskId, handleUpdateResponse, handleError);
-  // }, [selectedLabels, taskId, handleUpdateResponse, handleError]);
+  useEffect(() => {
+    updateLabelsAPI(selectedLabels, taskId, handleUpdateResponse, handleError);
+  }, [selectedLabels, taskId, handleUpdateResponse, handleError]);
 
   //   clicking outisde the label => close the drop down
   useEffect(() => {
-    const handleOutisdeClick = (event) => {
+    const handleOutsideClick = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleOutisdeClick);
+    document.addEventListener("mousedown", handleOutsideClick);
     return () => {
-      document.removeEventListener("mousedown", handleOutisdeClick);
+      document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
 
@@ -100,7 +100,7 @@ const LabelSelector = ({
           label,
         ]);
       }
-      updateLabelsAPI(updated, taskId, handleUpdateResponse, handleError);
+      // updateLabelsAPI(updated, taskId, handleUpdateResponse, handleError);
     },
     [handleSetMatchingLabels, selectedLabels, setSelectedLabels]
   );
@@ -112,7 +112,7 @@ const LabelSelector = ({
       );
       setSearchInput("");
       handleSetMatchingLabels([]);
-      updateLabelsAPI(updated, taskId, handleUpdateResponse, handleError);
+      // updateLabelsAPI(updated, taskId, handleUpdateResponse, handleError);
     },
     [handleSetMatchingLabels, setSelectedLabels]
   );
@@ -153,7 +153,7 @@ const LabelSelector = ({
               <ul className="selected-labels-list">
                 {selectedLabels.map((label) => (
                   <li key={`${label}-selected`} className="selected-label">
-                    <LucideTag />
+                    <LucideTag />{label}
                     <button onClick={() => handleLabelDeselect(label)}>
                       <XCircle width={8} />
                     </button>
